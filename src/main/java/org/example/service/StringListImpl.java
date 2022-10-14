@@ -3,6 +3,9 @@ package org.example.service;
 import org.example.exeptions.ElementNotFoundException;
 import org.example.exeptions.NullRequestException;
 import org.example.exeptions.OutOfListSizeException;
+
+import java.util.Arrays;
+
 public class StringListImpl implements StringList {
     private String[] items;
     private int size;
@@ -13,31 +16,22 @@ public class StringListImpl implements StringList {
 
     @Override
     public String add(String item) {
-        if (item == null) {
-            throw new NullRequestException();
-        }
-        if (size >= items.length) {
-            increaseArray();
-        }
-        items[size] = item;
-        size++;
+        validateItem(item);
+        validateSize();
+        items[size++] = item;
         return item;
     }
 
     @Override
     public String add(int index, String item) {
-        if (size <= index) {
-            throw new OutOfListSizeException();
+        validateIndex(index);
+        validateItem(item);
+        validateSize();
+        if (index == size) {
+            items[size++] = item;
+            return item;
         }
-        if (item == null) {
-            throw new NullRequestException();
-        }
-        if (size >= items.length) {
-            increaseArray();
-        }
-        for (int i = size; i >= index; i--) {
-            items[i + 1] = items[i];
-        }
+        System.arraycopy(items, index, items, index + 1, size - index);
         items[index] = item;
         size++;
         return item;
@@ -45,30 +39,28 @@ public class StringListImpl implements StringList {
 
     @Override
     public String set(int index, String item) {
-        if (size <= index) {
-            throw new OutOfListSizeException();
-        }
-        if (item == null) {
-            throw new NullRequestException();
-        }
+        validateIndex(index);
+        validateItem(item);
         items[index] = item;
         return item;
     }
 
     @Override
     public String remove(String item) {
-        int index = -1;
-        for (int i = 0; i < size; i++) {
-            if (items[i].equals(item)) {
-                index = i;
-                break;
-            }
-        }
-        if (index == -1) {
+        validateItem(item);
+        int index = indexOf(item);
+        if(index == -1) {
             throw new ElementNotFoundException();
         }
-        for (int i = index; i < size; i++) {
-            items[i] = items[i + 1];
+        return remove(index);
+    }
+
+    @Override
+    public String remove(int index) {
+        validateIndex(index);
+        String item = items[index];
+        if (index != size) {
+            System.arraycopy(items, index + 1, items, index, size - index);
         }
         items[size] = null;
         size--;
@@ -76,27 +68,8 @@ public class StringListImpl implements StringList {
     }
 
     @Override
-    public String remove(int index) {
-        if (size <= index) {
-            throw new OutOfListSizeException();
-        }
-        String result = items[index];
-        for (int i = index; i < size; i++) {
-            items[i] = items[i + 1];
-        }
-        items[size] = null;
-        size--;
-        return result;
-    }
-
-    @Override
     public boolean contains(String item) {
-        for (int i = 0; i < size; i++) {
-            if (items[i].equals(item)) {
-                return true;
-            }
-        }
-        return false;
+        return indexOf(item) != -1;
     }
 
     @Override
@@ -121,27 +94,16 @@ public class StringListImpl implements StringList {
 
     @Override
     public String get(int index) {
-        if (size <= index) {
-            throw new OutOfListSizeException();
-        }
+        validateIndex(index);
         return items[index];
     }
 
     @Override
     public boolean equals(StringList otherList) {
-        if (otherList == null) {
+        if ( otherList == null) {
             throw new NullRequestException();
         }
-        String[] otherArray = otherList.toArray();
-        boolean result = false;
-        for (int i = 0; i < size; i++) {
-            if (items[i].equals(otherArray[i])) {
-                result = true;
-            } else {
-                return false;
-            }
-        }
-        return result;
+        return Arrays.equals(this.toArray(), otherList.toArray());
     }
 
     @Override
@@ -151,17 +113,12 @@ public class StringListImpl implements StringList {
 
     @Override
     public boolean isEmpty() {
-        if (size == 0) {
-            return true;
-        }
-        return false;
+        return size == 0;
     }
 
     @Override
     public void clear() {
-        for (int i = 0; i < size; i++) {
-            items[i] = null;
-        }
+        items = new String[10];
         size = 0;
     }
 
@@ -182,5 +139,21 @@ public class StringListImpl implements StringList {
         }
         items = newArray;
         System.out.println(items.length);
+    }
+
+    private void validateItem(String item) {
+        if(item == null) {
+            throw new NullRequestException();
+        }
+    }
+
+    private void validateIndex(int index) {
+        if (index < 0 || index > size) {
+            throw new OutOfListSizeException();
+        }
+    }
+
+    private void validateSize() {
+        increaseArray();
     }
 }
