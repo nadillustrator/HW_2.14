@@ -27,10 +27,6 @@ public class StringListImpl implements StringList {
         validateIndex(index);
         validateItem(item);
         validateSize();
-        if (index == size) {
-            items[size++] = item;
-            return item;
-        }
         System.arraycopy(items, index, items, index + 1, size - index);
         items[index] = item;
         size++;
@@ -154,6 +150,7 @@ public class StringListImpl implements StringList {
     }
 
     private void validateSize() {
+        if (size >= items.length)
         increaseArray();
     }
 }
