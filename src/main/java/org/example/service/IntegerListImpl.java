@@ -78,9 +78,7 @@ public class IntegerListImpl implements IntegerList {
 
     @Override
     public Integer[] sort() {
-//        return bubbleSort();
-//        return selectionSort();
-        return insertionSort();
+        return quickSort(items, 0, size - 1);
     };
 
     @Override
@@ -240,6 +238,82 @@ public class IntegerListImpl implements IntegerList {
         System.out.println(System.currentTimeMillis() - start + " - insertionSort");
         return items;
     }
+
+    public static Integer[] quickSort(Integer[] arr, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(arr, begin, end);
+
+            quickSort(arr, begin, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, end);
+        }
+        return arr;
+    }
+
+    private static int partition(Integer[] arr, int begin, int end) {
+        int pivot = arr[end];
+        int i = (begin - 1);
+
+        for (int j = begin; j < end; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+
+                swapElements(arr, i, j);
+            }
+        }
+
+        swapElements(arr, i + 1, end);
+        return i + 1;
+    }
+
+    private static void swapElements(Integer[] arr, int left, int right) {
+        int temp = arr[left];
+        arr[left] = arr[right];
+        arr[right] = temp;
+    }
+
+//    public static Integer[] mergeSort(Integer[] arr) {
+//        if (arr.length < 2) {
+//            return arr;
+//        }
+//        int mid = arr.length / 2;
+//        Integer[] left = new Integer[mid];
+//        Integer[] right = new Integer[arr.length - mid];
+//
+//        for (int i = 0; i < left.length; i++) {
+//            left[i] = arr[i];
+//        }
+//
+//        for (int i = 0; i < right.length; i++) {
+//            right[i] = arr[mid + i];
+//        }
+//
+//        mergeSort(left);
+//        mergeSort(right);
+//
+//        merge(arr, left, right);
+//        return arr;
+//    }
+//
+//    public static void merge(Integer[] arr, Integer[]  left, Integer[]  right) {
+//
+//        int mainP = 0;
+//        int leftP = 0;
+//        int rightP = 0;
+//        while (leftP < left.length && rightP < right.length) {
+//            if (left[leftP] <= right[rightP]) {
+//                arr[mainP++] = left[leftP++];
+//            } else {
+//                arr[mainP++] = right[rightP++];
+//            }
+//        }
+//        while (leftP < left.length) {
+//            arr[mainP++] = left[leftP++];
+//        }
+//        while (rightP < right.length) {
+//            arr[mainP++] = right[rightP++];
+//        }
+//    }
+//
 
 
 }
