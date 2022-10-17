@@ -135,6 +135,31 @@ class StringListImplTest {
                 () -> list.remove(7));
     }
 
+    //sort();
+    @Test
+    void shouldReturnCorrectValueSortTest1() {
+        list.add("Dog");
+        list.add("Animal");
+        list.add("Cat");
+        list.add("Bird");
+        list.sort();
+        String[] result = list.toArray();
+        String[] expectedResult = new String[]{"Animal", "Bird", "Cat", "Dog"};
+        assertArrayEquals(expectedResult, result);
+    }
+
+    @Test
+    void shouldReturnCorrectValueSortTest2() {
+        list.add("5");
+        list.add("2");
+        list.add("3");
+        list.add("9");
+        list.sort();
+        String[] result = list.toArray();
+        String[] expectedResult = new String[]{"2", "3", "5", "9"};
+        assertArrayEquals(expectedResult, result);
+    }
+
     //contains(String item);
     @Test
     void shouldReturnTrueContainsTest1() {

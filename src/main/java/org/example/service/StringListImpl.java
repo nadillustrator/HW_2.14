@@ -5,6 +5,7 @@ import org.example.exeptions.NullRequestException;
 import org.example.exeptions.OutOfListSizeException;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class StringListImpl implements StringList {
     private String[] items;
@@ -45,7 +46,7 @@ public class StringListImpl implements StringList {
     public String remove(String item) {
         validateItem(item);
         int index = indexOf(item);
-        if(index == -1) {
+        if (index == -1) {
             throw new ElementNotFoundException();
         }
         return remove(index);
@@ -64,8 +65,32 @@ public class StringListImpl implements StringList {
     }
 
     @Override
+    public String[] sort() {
+        return insertionSort();
+    }
+
+    ;
+
+    @Override
     public boolean contains(String item) {
-        return indexOf(item) != -1;
+        sort();
+        int min = 0;
+        int max = size - 1;
+
+        while (min <= max) {
+            int mid = (min + max) / 2;
+
+            if (Objects.equals(item, items[mid])) {
+                return true;
+            }
+
+            if (item.equals(items[mid])) {
+                max = mid - 1;
+            } else {
+                min = mid + 1;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -96,7 +121,7 @@ public class StringListImpl implements StringList {
 
     @Override
     public boolean equals(StringList otherList) {
-        if ( otherList == null) {
+        if (otherList == null) {
             throw new NullRequestException();
         }
         return Arrays.equals(this.toArray(), otherList.toArray());
@@ -138,7 +163,7 @@ public class StringListImpl implements StringList {
     }
 
     private void validateItem(String item) {
-        if(item == null) {
+        if (item == null) {
             throw new NullRequestException();
         }
     }
@@ -151,6 +176,21 @@ public class StringListImpl implements StringList {
 
     private void validateSize() {
         if (size >= items.length)
-        increaseArray();
+            increaseArray();
+    }
+//    j > 0 && items[j - 1] >= temp
+    private String[] insertionSort() {
+        long start = System.currentTimeMillis();
+        for (int i = 1; i < size; i++) {
+            String temp = items[i];
+            int j = i;
+            while (j > 0 && items[j - 1].equals(temp) || j > 0 && items[j - 1].compareTo(temp) > 0) {
+                items[j] = items[j - 1];
+                j--;
+            }
+            items[j] = temp;
+        }
+        System.out.println(System.currentTimeMillis() - start + " - insertionSort");
+        return items;
     }
 }
